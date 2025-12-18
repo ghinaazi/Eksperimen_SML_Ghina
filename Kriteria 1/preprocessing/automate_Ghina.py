@@ -42,6 +42,7 @@ def automated_preprocessing(
     random_state: int = 42
 ):
     # 1. Cleaning awal
+    target_col = 'Class'
     df = df.dropna().drop_duplicates()
 
     # 2. Split fitur & target
