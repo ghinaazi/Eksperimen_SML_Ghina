@@ -78,7 +78,7 @@ def automated_preprocessing(
 
 if __name__ == "__main__":
     # 1. Load dataset
-    df = pd.read_csv("raw_data.csv")
+    df = pd.read_csv("raw_dataset.csv")
 
     # 2. Jalankan preprocessing
     X_train, X_test, y_train, y_test = automated_preprocessing(
