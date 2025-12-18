@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+
+import os
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
@@ -6,10 +8,11 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from joblib import dump
-import os
 
 
-
+# ===============================
+# Custom Transformer: IQR Remover
+# ===============================
 class IQRRemover(BaseEstimator, TransformerMixin):
     def __init__(self, features, factor=1.5):
         self.features = features
@@ -29,35 +32,43 @@ class IQRRemover(BaseEstimator, TransformerMixin):
         return X.loc[mask]
 
 
+# ===============================
+# Automated Preprocessing Function
+# ===============================
 def automated_preprocessing(
     df: pd.DataFrame,
-    target_col: str,
     save_preprocessor_path: str | None = None,
     test_size: float = 0.3,
     random_state: int = 42
 ):
-
     # 1. Cleaning awal
-    df = df.dropna()
-    df = df.drop_duplicates()
-    
-    # 2. Identifikasi kolom numerik
-    target_col = 'Class'
-    numerical_cols = df.select_dtypes(include='number').columns.drop(target_col)
+    df = df.dropna().drop_duplicates()
 
-    # 3. Remove outlier (SEBELUM split)
-    iqr_remover = IQRRemover(features=numerical_cols)
-    df_clean = iqr_remover.fit_transform(df)
+    # 2. Split fitur & target
+    X = df.drop(columns=[target_col])
+    y = df[target_col]
 
-    # 4. Split data
-    X = df_clean.drop(columns=[target_col])
-    y = df_clean[target_col]
-
+    # 3. Train-test split (STRATIFIED)
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state
+        X,
+        y,
+        test_size=test_size,
+        random_state=random_state,
+        stratify=y
     )
 
-    # 5. Preprocessing pipeline (scaling)
+    # 4. Identifikasi kolom numerik
+    numerical_cols = X_train.select_dtypes(include='number').columns.tolist()
+
+    # 5. Outlier removal (FIT hanya di TRAIN)
+    iqr_remover = IQRRemover(features=numerical_cols)
+    X_train = iqr_remover.fit_transform(X_train)
+    y_train = y_train.loc[X_train.index]
+
+    X_test = iqr_remover.transform(X_test)
+    y_test = y_test.loc[X_test.index]
+
+    # 6. Preprocessing pipeline (Scaling)
     numeric_pipeline = Pipeline(steps=[
         ('scaler', StandardScaler())
     ])
@@ -65,34 +76,54 @@ def automated_preprocessing(
     preprocessor = ColumnTransformer(
         transformers=[
             ('num', numeric_pipeline, numerical_cols)
-        ]
+        ],
+        remainder='drop'
     )
 
-    X_train = preprocessor.fit_transform(X_train)
-    X_test = preprocessor.transform(X_test)
+    X_train_scaled = preprocessor.fit_transform(X_train)
+    X_test_scaled = preprocessor.transform(X_test)
 
-    # 6. Simpan preprocessor
-    if save_preprocessor_path is not None:
+    # 7. Simpan preprocessor
+    if save_preprocessor_path:
         dump(preprocessor, save_preprocessor_path)
 
-    return X_train, X_test, y_train, y_test
-    
-
-if __name__ == "__main__":
-    df = pd.read_csv("raw_dataset.csv")  # path disesuaikan working directory
-    X_train, X_test, y_train, y_test = automated_preprocessing(
-        df=df,
-        target_col='Class',
-        save_preprocessor_path='preprocessor.joblib'
+    return (
+        X_train_scaled,
+        X_test_scaled,
+        y_train.reset_index(drop=True),
+        y_test.reset_index(drop=True),
+        numerical_cols
     )
 
-    output_folder = 'dataset_preprocessing'  # folder output relatif ke working dir
-    os.makedirs(output_folder, exist_ok=True)
-    output_file = os.path.join(output_folder, 'data_clean.csv')
 
-    numerical_cols = df.select_dtypes(include='number').columns.drop('Class')
-    train_df = pd.DataFrame(X_train, columns=numerical_cols)
-    train_df['Class'] = y_train.reset_index(drop=True)
-    train_df.to_csv(output_file, index=False)
+# ===============================
+# Main Execution
+# ===============================
+if __name__ == "__main__":
 
-    print(f"CSV saved at {output_file}")
+    # Load dataset
+    df = pd.read_csv("raw_dataset.csv")
+
+    # Run preprocessing
+    X_train, X_test, y_train, y_test, num_cols = automated_preprocessing(
+        df=df,
+        target_col="Class",
+        save_preprocessor_path="preprocessor.joblib"
+    )
+
+    # Output directory
+    output_dir = "dataset_preprocessing"
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Save TRAIN data
+    train_df = pd.DataFrame(X_train, columns=num_cols)
+    train_df["Class"] = y_train
+    train_df.to_csv(os.path.join(output_dir, "train_preprocessed.csv"), index=False)
+
+    # Save TEST data
+    test_df = pd.DataFrame(X_test, columns=num_cols)
+    test_df["Class"] = y_test
+    test_df.to_csv(os.path.join(output_dir, "test_preprocessed.csv"), index=False)
+
+    print("✅ Preprocessing selesai.")
+    print(f"📁 Output disimpan di folder: {output_dir}")
