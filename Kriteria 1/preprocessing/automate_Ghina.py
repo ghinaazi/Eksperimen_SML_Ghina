@@ -45,6 +45,8 @@ def automated_preprocessing(
     target_col = 'Class'
     df = df.dropna().drop_duplicates()
 
+    df[target_col] = df[target_col].map({2: 0, 4: 1})
+
     # 2. Split fitur & target
     X = df.drop(columns=[target_col])
     y = df[target_col]
