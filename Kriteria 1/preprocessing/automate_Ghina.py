@@ -108,7 +108,6 @@ if __name__ == "__main__":
     # Run preprocessing
     X_train, X_test, y_train, y_test, num_cols = automated_preprocessing(
         df=df,
-        target_col="Class",
         save_preprocessor_path="preprocessor.joblib"
     )
 
