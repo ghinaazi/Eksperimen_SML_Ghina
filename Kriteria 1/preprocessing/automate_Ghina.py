@@ -74,15 +74,25 @@ def automated_preprocessing(
         dump(preprocessor, save_preprocessor_path)
 
     return X_train, X_test, y_train, y_test
+    
 
-# Panggil fungsi preprocessing
-X_train, X_test, y_train, y_test = automated_preprocessing(
-    df=df,
-    target_col='Class',
-    save_preprocessor_path='Kriteria 1/preprocessing/preprocessor.joblib'
-)
+if __name__ == "__main__":
+    # 1. Load dataset
+    df = pd.read_csv("raw_data.csv")
 
-# Simpan dataset hasil preprocessing
-train_df = pd.DataFrame(X_train, columns=numerical_cols)  # buat DataFrame dari X_train
-train_df['Class'] = y_train.reset_index(drop=True)        # tambahkan target
-train_df.to_csv('Kriteria 1/preprocessing/dataset_preprocessing/data_clean.csv', index=False)
+    # 2. Jalankan preprocessing
+    X_train, X_test, y_train, y_test = automated_preprocessing(
+        df=df,
+        target_col='Class',
+        save_preprocessor_path='Kriteria 1/preprocessing/preprocessor.joblib'
+    )
+
+    # 3. Buat folder output jika belum ada
+    output_folder = 'Kriteria 1/preprocessing/dataset_preprocessing'
+    os.makedirs(output_folder, exist_ok=True)
+
+    # 4. Simpan CSV
+    output_file = os.path.join(output_folder, 'data_clean.csv')
+    train_df = pd.DataFrame(X_train, columns=[col for col in df.columns if col != 'Class'])
+    train_df['Class'] = y_train.reset_index(drop=True)
+    train_df.to_csv(output_file, index=False)
