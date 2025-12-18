@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
     paths-ignore:
-      - "Kriteria_1/preprocessing/dataset_preprocessing/**"
+      - "Kriteria 1/preprocessing/dataset_preprocessing/**"
   workflow_dispatch:
 
 jobs:
@@ -29,11 +29,11 @@ jobs:
 
       - name: Run preprocessing script
         run: python automate_Ghina.py
-        working-directory: Kriteria_1/preprocessing
+        working-directory: "Kriteria 1/preprocessing"
 
       - name: Commit processed dataset
         run: |
-          DATASET_DIR="Kriteria_1/preprocessing/dataset_preprocessing"
+          DATASET_DIR="Kriteria 1/preprocessing/dataset_preprocessing"
 
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
