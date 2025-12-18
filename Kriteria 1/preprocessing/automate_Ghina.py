@@ -6,6 +6,8 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from joblib import dump
+import os
+
 
 
 class IQRRemover(BaseEstimator, TransformerMixin):
