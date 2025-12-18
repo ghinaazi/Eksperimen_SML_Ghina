@@ -82,9 +82,7 @@ X_train, X_test, y_train, y_test = automated_preprocessing(
     save_preprocessor_path='Kriteria 1/preprocessing/preprocessor.joblib'
 )
 
-# =====================
 # Simpan dataset hasil preprocessing
-# =====================
 train_df = pd.DataFrame(X_train, columns=numerical_cols)  # buat DataFrame dari X_train
 train_df['Class'] = y_train.reset_index(drop=True)        # tambahkan target
 train_df.to_csv('Kriteria 1/preprocessing/dataset_preprocessing/data_clean.csv', index=False)
