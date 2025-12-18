@@ -4,8 +4,8 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
-train_path = "data_preprocessing/train.csv"
-test_path = "data_preprocessing/test.csv"
+train_path = "data_preprocessing/train_preprocessec.csv"
+test_path = "data_preprocessing/test_preprocessed.csv"
 
 train_df = pd.read_csv(train_path)
 test_df = pd.read_csv(test_path)
