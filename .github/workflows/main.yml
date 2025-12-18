@@ -25,8 +25,8 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run preprocessing script
-      run: |
-        python "Kriteria 1/preprocessing/automate_Ghina.py"
+      run: python automate_Ghina.py
+      working-directory: "Kriteria 1/preprocessing"
 
     - name: Commit processed dataset
       run: |
