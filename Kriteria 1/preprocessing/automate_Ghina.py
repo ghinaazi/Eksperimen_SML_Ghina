@@ -35,27 +35,19 @@ def automated_preprocessing(
     random_state: int = 42
 ):
 
-    # =====================
     # 1. Cleaning awal
-    # =====================
     df = df.dropna()
     df = df.drop_duplicates()
-
-    # =====================
+    
     # 2. Identifikasi kolom numerik
-    # =====================
     target_col = 'Class'
     numerical_cols = df.select_dtypes(include='number').columns.drop(target_col)
 
-    # =====================
     # 3. Remove outlier (SEBELUM split)
-    # =====================
     iqr_remover = IQRRemover(features=numerical_cols)
     df_clean = iqr_remover.fit_transform(df)
 
-    # =====================
     # 4. Split data
-    # =====================
     X = df_clean.drop(columns=[target_col])
     y = df_clean[target_col]
 
@@ -63,9 +55,7 @@ def automated_preprocessing(
         X, y, test_size=test_size, random_state=random_state
     )
 
-    # =====================
     # 5. Preprocessing pipeline (scaling)
-    # =====================
     numeric_pipeline = Pipeline(steps=[
         ('scaler', StandardScaler())
     ])
@@ -79,10 +69,22 @@ def automated_preprocessing(
     X_train = preprocessor.fit_transform(X_train)
     X_test = preprocessor.transform(X_test)
 
-    # =====================
     # 6. Simpan preprocessor
-    # =====================
     if save_preprocessor_path is not None:
         dump(preprocessor, save_preprocessor_path)
 
     return X_train, X_test, y_train, y_test
+
+# Panggil fungsi preprocessing
+X_train, X_test, y_train, y_test = automated_preprocessing(
+    df=df,
+    target_col='Class',
+    save_preprocessor_path='Kriteria 1/preprocessing/preprocessor.joblib'
+)
+
+# =====================
+# Simpan dataset hasil preprocessing
+# =====================
+train_df = pd.DataFrame(X_train, columns=numerical_cols)  # buat DataFrame dari X_train
+train_df['Class'] = y_train.reset_index(drop=True)        # tambahkan target
+train_df.to_csv('Kriteria 1/preprocessing/dataset_preprocessing/data_clean.csv', index=False)
