@@ -29,13 +29,12 @@ jobs:
       working-directory: "Kriteria 1/preprocessing"
 
     - name: Commit processed dataset
-  run: |
-    git config --global user.name "github-actions"
-    git config --global user.email "github-actions@github.com"
-    if [ -n "$(git status --porcelain "Kriteria 1/preprocessing/dataset_preprocessing")" ]; then
-      git add "Kriteria 1/preprocessing/dataset_preprocessing"
-      git commit -m "Update processed dataset"
-      git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ghinaazi/Eksperimen_SML_Ghina.git HEAD:main
-    else
-      echo "No files to commit"
-    fi
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        if [ -n "$(git status --porcelain "Kriteria 1/preprocessing/dataset_preprocessing")" ]; then
+          git add "Kriteria 1/preprocessing/dataset_preprocessing"
+          git commit -m "Update processed dataset"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ghinaazi/Eksperimen_SML_Ghina.git HEAD:main
+        else
+          echo "No files to commit"
