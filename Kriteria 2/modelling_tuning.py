@@ -5,8 +5,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score
 
-train_path = "data_preprocessing/train_preprocessed.csv"
-test_path = "data_preprocessing/test_preprocessed.csv"
+train_path = "Kriteria 2/data_preprocessing/train_preprocessed.csv"
+test_path = "Kriteria 2/data_preprocessing/test_preprocessed.csv"
 
 train_df = pd.read_csv(train_path)
 test_df = pd.read_csv(test_path)
