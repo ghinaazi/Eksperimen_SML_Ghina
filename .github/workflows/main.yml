@@ -35,6 +35,6 @@ jobs:
         if [ -n "$(git status --porcelain "Kriteria 1/preprocessing/dataset_preprocessing")" ]; then
           git add "Kriteria 1/preprocessing/dataset_preprocessing"
           git commit -m "Update processed dataset"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ghinaazi/Eksperimen_SML_Ghina.git HEAD:main
+          git push https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/ghinaazi/Eksperimen_SML_Ghina.git HEAD:main
         else
           echo "No files to commit"
