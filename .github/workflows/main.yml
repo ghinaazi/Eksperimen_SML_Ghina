@@ -24,7 +24,7 @@ jobs:
 
     - name: Run preprocessing script
       run: |
-        python automate_Ghina.py
+        python "Kriteria 1/preprocessing/automate_Ghina.py"
 
     - name: Commit processed dataset
       run: |
