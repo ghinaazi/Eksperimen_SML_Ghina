@@ -16,6 +16,9 @@ y_train = train_df["Class"]
 X_test = test_df.drop("Class", axis=1)
 y_test = test_df["Class"]
 
+mlflow.set_tracking_uri("http://127.0.0.1:5000/")
+mlflow.set_experiment("breast_cancer_modelling")
+
 # Enable MLflow autolog
 mlflow.sklearn.autolog()
 
